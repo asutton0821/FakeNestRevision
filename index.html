@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="./js/important.js"></script>
+  </head>
+  <body>
+    <h5>Copyright Colson Sutton</h5>
+    <h1>Nest Project</h1>
+    <h1>Press a switch to toggle modes. Only one mode toggled at a time</h1>
+    <p>
+      Cooling:
+      <input type="checkbox" id="cool" disabled="disabled" checked="true" />
+    </p>
+    <p>Heating: <input type="checkbox" id="heat" disabled="disabled" /></p>
+    <p>Room temperature: <span id="temp"></span></p>
+    <span id="opacity"></span>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
+    <script>
+      const socket = io();
+      window.addEventListener("load", function() {
+        const coolCheckbox = document.getElementById("cool");
+        const heatCheckbox = document.getElementById("heat");
+        const tempLabel = document.getElementById("test2");
+
+        let temperatureCheck = document.getElementById("temp");
+        temperatureCheck.addEventListener("change", () => {
+          socket.emit("temp", value);
+        });
+
+        coolCheckbox.addEventListener("change", function() {
+          socket.emit("cool", Number(this.checked));
+        });
+
+        heatCheckbox.addEventListener("change", function() {
+          socket.emit("heat", Number(this.checked));
+        });
+
+        tempLabel.addEventListener("change", function() {
+          socket.emit("test2", Number(this.innerText)); //send button status to server ($
+        });
+      });
+
+      socket.on("cool", function(data) {
+        if (document.getElementById("cool").checked == false) {
+          document.getElementById("cool").checked = true;
+          document.getElementById("heat").checked = false;
+        }
+
+        socket.emit("cool", document.getElementById("cool").checked);
+      });
+
+      socket.on("heat", function(data) {
+        if (document.getElementById("heat").checked == false) {
+          document.getElementById("heat").checked = true;
+          document.getElementById("cool").checked = false;
+        }
+
+        socket.emit("heat", document.getElementById("heat").checked);
+      });
+
+      socket.on("temp", data => {
+        socket.emit("temp", (document.getElementById("temp").innerText = data));
+      });
+    </script>
+  </body>
+</html>
